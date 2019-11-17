@@ -1,0 +1,22 @@
+{
+  "name": "intercom_notifier_slack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node ."
+  },
+  "author": "reizouko",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^12.12.5",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "node-grovepi": "^2.2.2",
+    "request": "^2.88.0"
+  }
+}

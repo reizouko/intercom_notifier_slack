@@ -14,9 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const { GrovePi } = require("node-grovepi");
 const LoudnessAnalogSensor = GrovePi.sensors.LoudnessAnalog;
-const request = require("request");
+const util_1 = require("util");
+const request = util_1.promisify(require("request"));
+const execFile = util_1.promisify(require("child_process").execFile);
+const fs = __importStar(require("fs"));
+const unlink = util_1.promisify(fs.unlink);
+const moment_1 = __importDefault(require("moment"));
 const samplingInterval = 10; // unit: ms
 const loudnessThreshold = 600;
 const bufferMaxLength = 20;
@@ -54,6 +70,7 @@ function watch() {
             if (count >= bufferCountThreshold) {
                 // インターホンが鳴ったと判断する
                 notifying = true;
+                // 誰か来たというメッセージを送る
                 request({
                     url: process.env.SLACK_URL,
                     method: "POST",
@@ -61,13 +78,31 @@ function watch() {
                         "Content-Type": "application/json"
                     },
                     json: {
-                        "text": "誰か来たよ！"
+                        "text": "<!channel> 誰か来たよ！"
                     }
-                }, (err, response) => {
-                    if (err || response.statusCode != 200) {
-                        console.error(err);
-                        console.error(`status code = ${response.statusCode}`);
+                }).then((response, body) => {
+                    if (response.statusCode != 200) {
+                        throw new Error(`response status = ${response.statusCode}, body = ${body}`);
                     }
+                }).catch((err) => {
+                    console.error(err);
+                });
+                // モニターに映っている画像を撮って送る
+                const pictureFilePath = `./${moment_1.default().format("YYYYMMDD-HHmmss")}.jpg`;
+                execFile("raspistill", ["-t", "1", "-e", "jpg", "-o", pictureFilePath]).then(() => request({
+                    url: "https://slack.com/api/files.upload",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    },
+                    formData: {
+                        token: process.env.SLACK_TOKEN,
+                        channels: process.env.SLACK_CHANNEL,
+                        filetype: "jpg",
+                        file: fs.createReadStream(pictureFilePath)
+                    }
+                })).then(() => unlink(pictureFilePath)).catch((err) => {
+                    console.error(err);
                 });
                 setInterval(() => {
                     notifying = false;

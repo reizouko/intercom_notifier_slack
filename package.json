@@ -11,11 +11,12 @@
   "author": "reizouko",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "^12.12.5",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.4"
+    "@types/node": "^12.12.8",
+    "ts-node": "^8.5.2",
+    "typescript": "^3.7.2"
   },
   "dependencies": {
+    "moment": "^2.24.0",
     "node-grovepi": "^2.2.2",
     "request": "^2.88.0"
   }

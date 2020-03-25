@@ -89,7 +89,10 @@ function watch() {
                 });
                 // モニターに映っている画像を撮って送る
                 const pictureFilePath = `./${moment_1.default().format("YYYYMMDD-HHmmss")}.jpg`;
-                execFile("raspistill", ["-t", "1", "-e", "jpg", "-o", pictureFilePath]).then(() => request({
+                // カメラを置く環境に応じて、コマンドのオプションを書き換えてください
+                // 画像の反転が必要ならhf, vf、回転ならrotなど
+                // 詳しくは、raspistillのヘルプを見てね
+                execFile("raspistill", ["-t", "1000", "-e", "jpg", "-rot", "270", "-o", pictureFilePath]).then(() => request({
                     url: "https://slack.com/api/files.upload",
                     method: "POST",
                     headers: {
@@ -104,7 +107,7 @@ function watch() {
                 })).then(() => unlink(pictureFilePath)).catch((err) => {
                     console.error(err);
                 });
-                setInterval(() => {
+                setTimeout(() => {
                     notifying = false;
                 }, notifyingInterval);
             }

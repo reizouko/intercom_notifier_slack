@@ -32,12 +32,13 @@ const request = util_1.promisify(require("request"));
 const execFile = util_1.promisify(require("child_process").execFile);
 const fs = __importStar(require("fs"));
 const unlink = util_1.promisify(fs.unlink);
+const appendFile = util_1.promisify(fs.appendFile);
 const moment_1 = __importDefault(require("moment"));
 const samplingInterval = 10; // unit: ms
-const loudnessThreshold = 600;
+const loudnessThreshold = 650;
 const bufferMaxLength = 20;
 const bufferCountThreshold = 10;
-const notifyingInterval = 10000; // unit: ms
+const notifyingInterval = 15000; // unit: ms
 const sensor = new LoudnessAnalogSensor(0);
 const board = new GrovePi.board({
     debug: true,
@@ -107,6 +108,8 @@ function watch() {
                 })).then(() => unlink(pictureFilePath)).catch((err) => {
                     console.error(err);
                 });
+                // ついでに、分析のため、反応したときの音レベルのバッファもファイルに書き出す(追記なので容量に注意)
+                appendFile("./sensor_level.log", `[${buffer.join(", ")}]`, "utf-8");
                 setTimeout(() => {
                     notifying = false;
                 }, notifyingInterval);

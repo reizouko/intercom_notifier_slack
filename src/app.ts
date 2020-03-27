@@ -21,13 +21,14 @@ const request = promisify(require("request"));
 const execFile = promisify(require("child_process").execFile);
 import * as fs from "fs";
 const unlink = promisify(fs.unlink);
+const appendFile = promisify(fs.appendFile);
 import moment from "moment";
 
 const samplingInterval: number = 10;    // unit: ms
-const loudnessThreshold: number = 600;
+const loudnessThreshold: number = 650;
 const bufferMaxLength: number = 20;
 const bufferCountThreshold = 10;
-const notifyingInterval = 10000;        // unit: ms
+const notifyingInterval = 15000;        // unit: ms
 
 const sensor = new LoudnessAnalogSensor(0);
 
@@ -109,6 +110,9 @@ function watch(): void {
                 })).then((): Promise<any> => unlink(pictureFilePath)).catch((err: Error): void => {
                     console.error(err);
                 });
+
+                // ついでに、分析のため、反応したときの音レベルのバッファもファイルに書き出す(追記なので容量に注意)
+                appendFile("./sensor_level.log", `[${buffer.join(", ")}]`, "utf-8");
 
                 setTimeout((): void => {
                     notifying = false;

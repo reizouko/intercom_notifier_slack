@@ -34,11 +34,11 @@ const fs = __importStar(require("fs"));
 const unlink = util_1.promisify(fs.unlink);
 const appendFile = util_1.promisify(fs.appendFile);
 const moment_1 = __importDefault(require("moment"));
-const samplingInterval = 10; // unit: ms
-const loudnessThreshold = 650;
-const bufferMaxLength = 20;
-const bufferCountThreshold = 10;
-const notifyingInterval = 15000; // unit: ms
+const samplingInterval = 10; // 音レベルを取得する時間間隔 unit: ms
+const loudnessThreshold = 700; // インターホンが鳴ったときの音レベル
+const bufferMaxLength = 20; // 音レベルを貯めるバッファのサイズ
+const bufferCountThreshold = 10; // バッファの中で、音レベルがloudnessThresholdを上回るデータがこの数以上あったら、インターホンが鳴ったと判断する
+const notifyingInterval = 15000; // 一回通知したら、最低この時間は通知しない unit: ms
 const sensor = new LoudnessAnalogSensor(0);
 const board = new GrovePi.board({
     debug: true,
@@ -109,7 +109,7 @@ function watch() {
                     console.error(err);
                 });
                 // ついでに、分析のため、反応したときの音レベルのバッファもファイルに書き出す(追記なので容量に注意)
-                appendFile("./sensor_level.log", `[${buffer.join(", ")}]`, "utf-8");
+                appendFile("./sensor_level.log", `[${buffer.join(", ")}]\n`, "utf-8");
                 setTimeout(() => {
                     notifying = false;
                 }, notifyingInterval);

@@ -48,7 +48,7 @@ https://github.com/nodesource/distributions/blob/master/README.md
 
 - SLACK_URL=(前提条件で覚えたWebhook URL)
 - SLACK_TOKEN=(前提条件で覚えたOAuth Access Token)
-- SLACK_CHANNEL=通知をしたいチャンネルのID
+- SLACK_CHANNEL=(通知をしたいチャンネルのID)
 
 dist/app.jsを実行すればOKだよ。
 

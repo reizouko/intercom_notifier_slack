@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// 必要な環境変数
+// SLACK_URL: 通知を書き込むためのWebhook URL
+// SLACK_TOKEN: 画像をアップロードするための、OAuth Access Token (Userスコープ)
+// SLACK_CHANNEL: 通知先チャンネルのID
+
 const { GrovePi } = require("node-grovepi");
 const LoudnessAnalogSensor = GrovePi.sensors.LoudnessAnalog;
 import { promisify } from "util";

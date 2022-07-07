@@ -16,7 +16,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "node-grovepi": "^2.2.2",
     "request": "^2.88.0"
   }
